@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require("bcrypt");
 
-const { json } = require('express/lib/response');
 const User = require("../models/User");
 
 // GET - Single user document.
