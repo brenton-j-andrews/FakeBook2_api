@@ -27,8 +27,15 @@ router.post("/register", async (req, res) => {
 
   // Error handler, specific cases to be added later.
   catch (error) {
-    console.log(error);
-    res.status(500).json({ error : error });
+
+    // Email already has a registered account.
+    if (error.code === 11000) {
+      res.status(409).json({ msg : "This email already has an associated account, please use another."});
+    } 
+
+    else {
+      res.status(500).json({ error : error });
+    }
   }
 })
 
