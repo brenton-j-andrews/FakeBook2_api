@@ -1,6 +1,55 @@
 const router = require('express').Router();
 
 const Post = require("../models/Post");
+const User = require('../models/User');
+
+// GET - Get a single post.
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById({ _id : req.params.id });
+    res.status(200).json({ post : post });
+  }
+
+  catch (error) {
+    res.status(500).json({ error : error });
+  }
+})
+
+// GET - Get current user posts.
+router.get("/profile/all", async (req, res) => {
+
+  try {
+    let posts = await Post.find({ userId : req.body.userId });
+    res.status(200).json({ posts : posts });
+  }
+
+  catch (error) {
+    res.status(500).json({ error : error });
+  }
+})
+
+// GET - Get current user and friends post for timeline page.
+router.get("/timeline/all", async (req, res) => {
+
+  try {
+    const user = await User.findById({ _id : req.body.userId });
+    const userPosts = await Post.find({ _userId : req.body.userId });
+    
+    const friendPosts = Promise.all(
+      user.friends.map((friendId) => {
+        return Post.find({ userId : friendId });
+      })
+    )
+
+    let allPosts = userPosts.concat(friendPosts);
+    res.status(200).json({ posts : allPosts });
+  }
+
+  catch (error) {
+    res.status(500).json({ error : error });
+  }
+
+})
 
 // POST - Create new post.
 router.post("/", async (req, res) => {
