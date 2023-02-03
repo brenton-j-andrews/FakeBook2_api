@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const bcrypt = require("bcrypt");
 
 const { json } = require('express/lib/response');
 const User = require("../models/User");
@@ -21,6 +22,46 @@ router.get("/:id", async (req, res) => {
   catch (error) {
     console.log(error);
     res.status(500).json({ error: error });
+  }
+})
+
+// PUT - Update user account information.
+router.put("/:id/update", async (req, res) => {
+  
+  if (req.body.userId !== req.params.id) {
+
+    // Update password.
+    if (req.body.password) {
+      try {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+      }
+
+      catch (error) {
+        return response.status(500).json({ error : error });
+      }
+    }
+
+    try {
+      const user = await User.findByIdAndUpdate({ _id : req.params.id }, {
+          $set : req.body
+      });
+
+      res.status(200).json({ "msg" : "Account has been successfully updated." });
+    }
+
+    catch (error) {
+      if (error.code === 11000) {
+        res.status(409).json({ msg : "This email already has an associated account, please use another."});
+      }
+      else {
+        res.status(500).json({ error : error });
+      }
+    }
+  }
+
+  else {
+    res.status(403).json({ "msg" : "You cannot modify an account which isn't yours." });
   }
 })
 
