@@ -6,12 +6,13 @@ const User = require("../models/User");
 // POST - Register new user.
 router.post("/register", async (req, res) => {
 
+  console.log(req.body);
   try {
     // Hash password input.
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    const newUser = new User({
+    const newUser = await new User({
       "email" : req.body.email,
       "firstName" : req.body.firstName,
       "lastName" : req.body.lastName,
@@ -25,6 +26,7 @@ router.post("/register", async (req, res) => {
 
   // Error handler, specific cases to be added later.
   catch (error) {
+    console.log(error);
 
     // Email already has a registered account.
     if (error.code === 11000) {
