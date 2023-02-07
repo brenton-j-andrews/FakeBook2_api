@@ -42,6 +42,7 @@ router.post("/register", async (req, res) => {
 // POST - Sign in user.
 router.post("/login", async (req, res) => {
 
+  console.log(req.body);
   try {
     // Check that email is valid.
     const user = await User.findOne({ email : req.body.email });
@@ -57,13 +58,13 @@ router.post("/login", async (req, res) => {
         res.status(400).json({ msg: "Incorrect Password" });
       }
       else {
-        res.status(200).json({ user: user });
+        res.status(200).json(user);
       }
     }
   }
 
   catch (error) {
-    res.status(500).json({ error : error });
+    res.status(500).json(error);
   }
 })
 

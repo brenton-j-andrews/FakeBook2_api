@@ -6,7 +6,7 @@ const morgan = require("morgan");
 
 require("dotenv").config();
 
-const PORT = 8800;
+const PORT = 8080;
 
 const app = express();
 
