@@ -7,13 +7,15 @@ const User = require("../models/User");
 router.post("/register", async (req, res) => {
 
   console.log(req.body);
+  
   try {
     // Hash password input.
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    const newUser = await new User({
+    const newUser = new User({
       "email" : req.body.email,
+      "username" : req.body.username,
       "firstName" : req.body.firstName,
       "lastName" : req.body.lastName,
       "password" : hashedPassword
@@ -42,10 +44,9 @@ router.post("/register", async (req, res) => {
 // POST - Sign in user.
 router.post("/login", async (req, res) => {
 
-  console.log(req.body);
   try {
     // Check that email is valid.
-    const user = await User.findOne({ email : req.body.email });
+    const user = await User.findOne({ email : req.body.email }).populate('friends', "_id username firstName lastName profileImageUrl");
     
     if (!user) {
       res.status(404).json({ msg: "Account not found." });

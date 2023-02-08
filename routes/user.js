@@ -4,10 +4,16 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
 // GET - Single user document.
-router.get("/:id", async (req, res) => {
+router.get("/", async (req, res) => {
+
+  // userId query fetches user for post and share components, username query fetches for profile componenet.
+  const userId = req.query.userId;
+  const username = req.query.username;
 
   try {
-    const user = await User.findById({ _id : req.params.id }, { password: 0, createdAt: 0, updatedAt: 0});
+    const user = userId ? 
+      await User.findById({ _id : userId }).populate('friends', "_id username firstName lastName profileImageUrl") :
+      await User.findOne({ username : username }).populate('friends', "_id username firstName lastName profileImageUrl");
     
     if (!user) {
       res.status(400).json({ msg : "User not found."});
@@ -19,7 +25,7 @@ router.get("/:id", async (req, res) => {
   }
 
   catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).json(error);
   }
 })

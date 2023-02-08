@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
+
+  username : {
+    type: String,
+    required: true,
+    unique: true,
+    max: 25
+  },
   email : {
     type: String,
     require: true,
@@ -18,6 +25,24 @@ const UserSchema = new mongoose.Schema({
     require: true,
     min: 3,
     max: 25,
+  },
+  userData : {
+    location : { 
+      type: String,
+      default: ""
+    },
+    hometown : {
+      type: String,
+      default: ""
+    },
+    education : {
+      type: String,
+      default: ""
+    },
+    occupation: {
+      type: String,
+      default: ""
+    }
   },
   password : {
     type: String,
@@ -38,12 +63,12 @@ const UserSchema = new mongoose.Schema({
     default: ""
   },
   friends : {
-    type: Array,
+    type: [{ type : mongoose.Schema.Types.ObjectId, ref: 'User' }],
     default: []
   },
   sentFriendRequests : {
     type: Array,
-    default: []
+    default: [] 
   },
   receivedFriendRequests : {
     type: Array,
@@ -58,8 +83,5 @@ const UserSchema = new mongoose.Schema({
   toJSON: {virtuals : true}
 });
 
-UserSchema.virtual('fullName').get(function() {
-  return this.firstName + this.lastName;
-})
 
 module.exports = mongoose.model("User", UserSchema);
