@@ -12,8 +12,8 @@ router.get("/", async (req, res) => {
 
   try {
     const user = userId ? 
-      await User.findById({ _id : userId }).populate('friends', "_id username firstName lastName profileImageUrl") :
-      await User.findOne({ username : username }).populate('friends', "_id username firstName lastName profileImageUrl");
+      await User.findById({ _id : userId }) : 
+      await User.findOne({ username : username })
     
     if (!user) {
       res.status(400).json({ msg : "User not found."});
@@ -25,13 +25,38 @@ router.get("/", async (req, res) => {
   }
 
   catch (error) {
-    // console.log(error);
+    res.status(500).json(error);
+  }
+})
+
+// GET - User friends information.
+router.get("/friends/:userId", async (req, res) => {
+  try {
+    const user = await User.findById({ _id : req.params.userId });
+    const friends = await Promise.all(
+      user.friends.map((friendId) => {
+        return User.findById({ _id : friendId }, { 
+          _id: 1, 
+          username: 1,
+          firstName:1, 
+          lastName: 1, 
+          profileImageUrl: 1 
+        })
+      })
+    )
+    console.log(friends);
+    res.status(200).json(friends);
+  }
+
+  catch (error) {
     res.status(500).json(error);
   }
 })
 
 // PUT - Update user account information.
 router.put("/:id/update", async (req, res) => {
+
+  console.log(req.body);
   
   if (req.body.userId !== req.params.id) {
 
