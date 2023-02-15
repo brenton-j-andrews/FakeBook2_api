@@ -32,19 +32,19 @@ router.get("/", async (req, res) => {
 // GET - User friends information.
 router.get("/friends/:userId", async (req, res) => {
   try {
-    const user = await User.findById({ _id : req.params.userId });
-    const friends = await Promise.all(
-      user.friends.map((friendId) => {
-        return User.findById({ _id : friendId }, { 
-          _id: 1, 
-          username: 1,
-          firstName:1, 
-          lastName: 1, 
-          profileImageUrl: 1 
-        })
+   const user = await User.findById({ _id : req.params.userId });
+   const friends = await Promise.all(
+    user.friends.map((friendId) => {
+      return User.findById({ _id : friendId }, { 
+        _id: 1, 
+        username: 1,
+        firstName:1, 
+        lastName: 1, 
+        profileImageUrl: 1 
       })
+    })
     )
-    console.log(friends);
+
     res.status(200).json(friends);
   }
 
@@ -56,8 +56,6 @@ router.get("/friends/:userId", async (req, res) => {
 // PUT - Update user account information.
 router.put("/:id/update", async (req, res) => {
 
-  console.log(req.body);
-  
   if (req.body.userId !== req.params.id) {
 
     // Update password.
@@ -102,7 +100,6 @@ router.delete("/:id", async (req, res) => {
   if (req.body.userId === req.params.id) {
     try {
       const user = await User.deleteOne({ _id : req.params.id });
-      console.log(user);
       res.status(200).json({ msg : "Your account has been successfully deleted." });
     }
 
@@ -221,11 +218,15 @@ router.put("/:id/decline_request", async (req, res) => {
 
 // PUT - Unfriend User.
 router.put("/:id/unfriend", async (req, res) => {
+
   if (req.params.id !== req.body.userId) {
 
     try {
       const unfriendedUser = await User.findById({ _id : req.params.id });
       const signedInUser = await User.findById({ _id : req.body.userId });
+
+      console.log(unfriendedUser.friends);
+      console.log(signedInUser.friends);
 
       await unfriendedUser.updateOne({ 
         $pull : { friends : req.body.userId }
@@ -234,6 +235,9 @@ router.put("/:id/unfriend", async (req, res) => {
       await signedInUser.updateOne({
         $pull : { friends : req.params.id }
       });
+
+      console.log(unfriendedUser.friends);
+      console.log(signedInUser.friends);
 
       res.status(200).json({ "msg" : `You are no longer friends with ${unfriendedUser.firstName}`});
     }

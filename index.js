@@ -23,6 +23,8 @@ const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const postRoute = require("./routes/post");
 const commentRoute = require("./routes/comment");
+const conversationRoute = require("./routes/conversation");
+const messageRoute = require("./routes/message");
 
 // Initialize Middleware.
 app.use(express.json());
@@ -32,6 +34,8 @@ app.use(morgan("common"));
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
+app.use("/api/conversation", conversationRoute);
+app.use("/api/message", messageRoute);
 app.use("/api/comment", commentRoute);
 
 // Initialize Server.

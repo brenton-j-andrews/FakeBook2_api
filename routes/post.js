@@ -40,13 +40,10 @@ router.get("/timeline/:userId", async (req, res) => {
 
     const friendPosts = await Promise.all(
       user.friends.map((friendId) => {
-        console.log(friendId);
         return Post.find({ userId : friendId });
       })
     )
 
-    console.log(friendPosts);
-    
     res.status(200).json(userPosts.concat(...friendPosts));
   }
 
